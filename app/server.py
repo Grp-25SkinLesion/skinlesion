@@ -89,9 +89,9 @@ async def setup_learner_1():
         else:
             raise
 
-loop = asyncio.get_event_loop()
+loop_1 = asyncio.get_event_loop()
 tasks_1 = [asyncio.ensure_future(setup_learner_1())]
-learn_1 = loop.run_until_complete(asyncio.gather(*tasks_1))[0]
+learn_1 = loop_1.run_until_complete(asyncio.gather(*tasks_1))[0]
 loop.close()
 
 @app.route('/severity', methods=['POST'])
