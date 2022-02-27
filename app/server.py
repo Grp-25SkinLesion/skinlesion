@@ -90,8 +90,8 @@ async def setup_learner_1():
             raise
 
 loop = asyncio.get_event_loop()
-tasks = [asyncio.ensure_future(setup_learner_1())]
-learn = loop.run_until_complete(asyncio.gather(*tasks))[0]
+tasks_1 = [asyncio.ensure_future(setup_learner_1())]
+learn_1 = loop.run_until_complete(asyncio.gather(*tasks_1))[0]
 loop.close()
 
 @app.route('/severity', methods=['POST'])
@@ -99,10 +99,11 @@ async def severity(request):
     img_data = await request.form()
     img_bytes = await (img_data['file'].read())
     img = open_image(BytesIO(img_bytes))
-    prediction = learn.predict(img)[0]
+    prediction = learn_1.predict(img)[0]
     return JSONResponse({'result': str(prediction)})
 
 
 if __name__ == '__main__':
     if 'serve' in sys.argv:
         uvicorn.run(app=app, host='0.0.0.0', port=5000, log_level="info")
+
