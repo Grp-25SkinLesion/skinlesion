@@ -12,8 +12,7 @@ from starlette.staticfiles import StaticFiles
 export_file_url = 'https://www.googleapis.com/drive/v3/files/1Lc6b4j1ZPCQ2OI1DW7vb_beGgAxH4r83?alt=media&key=AIzaSyBMJwUtuzHW6hmYoppfeAFC-LOFsNbyR3w'
 export_file_name = '2020densenet.pkl'
 
-# // export_2 =
-# // export file name = 
+ 
 
 classes = ['benign','malignant']
 path = Path(__file__).parent
@@ -64,6 +63,14 @@ async def analyze(request):
     img_bytes = await (img_data['file'].read())
     img = open_image(BytesIO(img_bytes))
     prediction = learn.predict(img)[0]
+    return JSONResponse({'result': str(prediction)})
+
+@app.route('/severity', methods=['POST'])
+async def severity(request):
+    img_data = await request.form()
+    img_bytes = await (img_data['file'].read())
+    img = open_image(BytesIO(img_bytes))
+    prediction = learn1.predict(img)[0]
     return JSONResponse({'result': str(prediction)})
 
 
