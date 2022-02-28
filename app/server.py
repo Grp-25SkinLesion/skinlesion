@@ -67,43 +67,6 @@ async def analyze(request):
     return JSONResponse({'result': str(prediction)})
 
 
-#     ////
-
-export_file_url_1 = 'https://www.googleapis.com/drive/v3/files/1EH87-zs52xU2ggQTXs1xwpXCi8leP7Qn?alt=media&key=AIzaSyBMJwUtuzHW6hmYoppfeAFC-LOFsNbyR3w'
-export_file_name_1 = 'resnet50(50epoch).pkl'
-
-classes = ['AK', 'BCC', 'BKL', 'DF', 'MEL', 'NV', 'SCC', 'VASC']
-path = Path(__file__).parent
-
-
-async def setup_learner_1():
-    await download_file(export_file_url_1, path / export_file_name_1)
-    try:
-        learn_1 = load_learner(path, export_file_name_1)
-        return learn_1
-    except RuntimeError as e:
-        if len(e.args) > 0 and 'CPU-only machine' in e.args[0]:
-            print(e)
-            message = "\n\nThis model was trained with an old version of fastai and will not work in a CPU environment.\n\nPlease update the fastai library in your training environment and export your model again.\n\nSee instructions for 'Returning to work' at https://course.fast.ai."
-            raise RuntimeError(message)
-        else:
-            raise
-
-loop_1 = asyncio.get_event_loop()
-tasks_1 = [asyncio.ensure_future(setup_learner_1())]
-learn_1 = loop_1.run_until_complete(asyncio.gather(*tasks_1))[0]
-loop_1.close()
-
-@app.route('/severity', methods=['POST'])
-async def severity(request):
-    img_data = await request.form()
-    img_bytes = await (img_data['file'].read())
-    img = open_image(BytesIO(img_bytes))
-    prediction = learn_1.predict(img)[0]
-    return JSONResponse({'result': str(prediction)})
-
-
 if __name__ == '__main__':
     if 'serve' in sys.argv:
         uvicorn.run(app=app, host='0.0.0.0', port=5000, log_level="info")
-
